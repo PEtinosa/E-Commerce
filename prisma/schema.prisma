@@ -4,10 +4,105 @@
 // Get a free hosted Postgres database in seconds: `npx create-db`
 
 generator client {
-  provider = "prisma-client"
+  provider = "prisma-client-js"
   output   = "../src/generated/prisma"
 }
 
 datasource db {
   provider = "postgresql"
+}
+
+model User {
+    id Int @id @default(autoincrement())
+    first_name String
+    last_name String
+    isVerified Boolean @default(false)
+    email String @unique
+    password String
+    createdAt DateTime @default(now())
+
+    profile Profile?
+
+    cart Cart?
+}
+
+
+
+model Verification {
+    id        Int      @id @default(autoincrement())
+    code      String   @unique
+    user_id   Int      @unique
+    password  String
+
+    createdAt DateTime @default(now())
+}
+
+model Profile {
+    id Int @id @default(autoincrement())
+    profile_pics String?
+    phone_number String?
+    userId Int @unique
+    user User @relation(fields: [userId], references: [id] )
+}
+
+model Product {
+    id Int @id @default(autoincrement())
+    name String
+    image String
+    price Float
+    
+   sizes      ProductSize[]
+
+    // categoryId Int
+    // category   Category @relation(fields: [categoryId], references: [id])
+
+    cartItems CartItem[]
+}
+
+// model Category {
+//   id        Int       @id @default(autoincrement())
+//   name      String    @unique
+//   products  Product[]
+//   createdAt DateTime  @default(now())
+// }
+
+
+model Size {
+    id       Int      @id @default(autoincrement())
+    name     String   @unique // S, M, L, XL
+
+    products ProductSize[]
+}
+
+model ProductSize {
+    id        Int @id @default(autoincrement())
+
+    productId Int
+    product   Product @relation(fields: [productId], references: [id])
+
+    sizeId    Int
+    size      Size @relation(fields: [sizeId], references: [id])
+
+    stock     Int
+
+    @@unique([productId, sizeId])
+}
+
+model Cart {
+  id     Int @id @default(autoincrement())
+  userId Int @unique
+  user   User @relation(fields: [userId], references: [id])
+
+  items  CartItem[]
+}
+
+model CartItem {
+  id        Int @id @default(autoincrement())
+  quantity  Int
+
+  cartId    Int
+  cart      Cart @relation(fields: [cartId], references: [id])
+
+  productId Int
+  product   Product @relation(fields: [productId], references: [id])
 }
