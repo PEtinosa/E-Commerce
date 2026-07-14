@@ -1,5 +1,7 @@
 import express from "express";
 import cors from "cors";
+import { logger } from "./middleware/logger.js";
+import { errorHandler } from "./middleware/errorhandler.js";
 
 // Import Routes
 import { productRouter } from "./routes/prouductRoute.js";
@@ -8,11 +10,17 @@ import { userRouter } from "./routes/users.js";
 
 const app = express();
 
+app.use (cors());
+app.use(express.json());
+app.use(express.urlencoded({ extended:true}));
+
 // API ROUTES
 app.use("/products", productRouter);
 app.use("/cart", cartRouter);
 app.use("/users", userRouter);
 
+app.use(logger);
+app.use(errorHandler);
 app.listen(5001, ()=>console.log("server started at port:", 5001))
 /*this is saying that the server should listen at this port
 and callback "server started at port" so I know its working*/ 

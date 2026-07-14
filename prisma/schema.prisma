@@ -21,6 +21,8 @@ model User {
     password String
     createdAt DateTime @default(now())
 
+    verification Verification?
+
     profile Profile?
 
     cart Cart?
@@ -33,6 +35,8 @@ model Verification {
     code      String   @unique
     user_id   Int      @unique
     password  String
+
+    user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
 
     createdAt DateTime @default(now())
 }
