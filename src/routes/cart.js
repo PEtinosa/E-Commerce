@@ -5,7 +5,7 @@ export const cartRouter = Router();
 
 
 // to get a cart
-cartRouter.get("/cart", async (req,res)=>{
+cartRouter.get("/", async (req,res)=>{
     try {
         // check if the user exist or has an account
         const exist_user = await prisma.user.findUnique({
@@ -15,10 +15,9 @@ cartRouter.get("/cart", async (req,res)=>{
         });
         if(!exist_user)return res.json({message: "please log in"});
 
-        const cart = await prisma.cart.findunique({
+        const cart = await prisma.cart.findUnique({
             where:{
-                userId:user,
-                items: cartItems
+                userId: user.id
             }
         })
         res.status(200).json(cart);

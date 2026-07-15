@@ -1,9 +1,13 @@
 import express from "express";
 import cors from "cors";
+import dotenv from "dotenv";
 import { logger } from "./middleware/logger.js";
 import { errorHandler } from "./middleware/errorhandler.js";
 
+dotenv.config();
+
 // Import Routes
+import { authRouter } from "./routes/authRoute.js";
 import { productRouter } from "./routes/prouductRoute.js";
 import { cartRouter } from "./routes/cart.js";
 import { userRouter } from "./routes/users.js";
@@ -15,6 +19,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended:true}));
 
 // API ROUTES
+app.use("/auth", authRouter)
 app.use("/products", productRouter);
 app.use("/cart", cartRouter);
 app.use("/users", userRouter);

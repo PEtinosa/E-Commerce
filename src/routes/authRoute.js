@@ -1,42 +1,12 @@
 import { Router } from "express";
 import bcrypt from "bcrypt";
-import { Users } from "../models/users.js";
-import { generate_code } from "../utils/generate_code.js";
 import { send_mail } from "../utils/send_email.js";
+import { generate_code } from "../utils/generate_code.js";
 import { prisma} from "../config/db.js";
 import { authMiddleware, generate_jwt } from "../middleware/authMIddleware.js";
 
 export const authRouter = Router();
 
-
-/**
- * @swagger
- * /auth/register:
- *   post:
- *      summary: Register a new user endpoint
- *      description: this endpoint registers a new user
- *      tags: [Authentication]
- *      requestBody:
- *        required: true
- *        content:
- *          application/json:
- *            schema:
- *              type: object
- *              properties:
- *                first_name:
- *                  type: string
- *                last_name:
- *                   type: string
- *                phone_number:
- *                    type: string
- *                email:
- *                     type: string
- *                password:
- *                      type: string
- *        responses:
- *          201:
- *            description: User created successfully
-*/ 
 authRouter.post("/register", async (req, res) => {
   try {
     const { first_name, last_name, email, password } = req.body;
@@ -45,7 +15,7 @@ authRouter.post("/register", async (req, res) => {
     if (!email || !password)
       return res
         .status(400)
-        .json({ message: "email and passoword is required" });
+        .json({ message: "email and password is required" });
 
     // check if user exist
 
@@ -54,7 +24,7 @@ authRouter.post("/register", async (req, res) => {
         email: email
       }
     }); 
-
+    if(exist_user) return res.status(400).json({message: "user already exist"});
     // hash password
     const hashed_password = await bcrypt.hash(password, 5);
 
@@ -96,29 +66,6 @@ authRouter.post("/register", async (req, res) => {
   }
 });
 
-
-  /**
- * @swagger
- * /auth/verify-email:
- *   post:
- *      summary: verify a new user endpoint
- *      description: this endpoint verifies a new user
- *      tags: [Authentication]
- *      requestBody:
- *        required: true
- *        content:
- *          application/json:
- *            schema:
- *              type: object
- *              properties:
- *                id:
- *                  type: Int
- *                Otp-code:
- *                   type: string
- *        responses:
- *          200:
- *            description: User verified successfully
-*/ 
 
 
 authRouter.post("/verify-email/", async(req, res) => {
@@ -191,28 +138,6 @@ authRouter.post("/verify-email/", async(req, res) => {
 
 });
 
-  /**
- * @swagger
- * /auth/login:
- *   post:
- *      summary: Logs In a user endpoint
- *      description: this endpoint Logs a new user
- *      tags: [Authentication]
- *      requestBody:
- *        required: true
- *        content:
- *          application/json:
- *            schema:
- *              type: object
- *              properties:
- *                email:
- *                     type: string
- *                password:
- *                      type: string
- *        responses:
- *          200:
- *            description: success
-*/ 
 
 authRouter.post("/login", async (req, res) => {
   const { email, password } = req.body;
@@ -247,29 +172,6 @@ authRouter.post("/login", async (req, res) => {
   return res.status(200).json({ message: "success", data: exist_user, token:jwt_token });
 });
 
-
-/**
- * @swagger
- * /auth/forgot-password:
- *   post:
- *      summary: forgets a user password endpoint
- *      description: this endpoint forgets a user endpoint
- *      tags: [Authentication]
- *      requestBody:
- *        required: true
- *        content:
- *          application/json:
- *            schema:
- *              type: object
- *              properties:
- *                email:
- *                     type: string
- *                Otp-code:
- *                    type: string
- *        responses:
- *          200:
- *            description: OTP Sent
-*/ 
 
 authRouter.post("/forgot-password", async (req, res) => {
   
