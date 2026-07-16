@@ -124,8 +124,13 @@ authRouter.post("/register", async (req, res) => {
     );
 
     return res.status(201).json({
-          message: "User created successfully. Verification email sent.",
-          data: created_user,
+      message: "User created successfully. Verification email sent.",
+      data: {
+      id: created_user.id,
+      first_name: created_user.first_name,
+      last_name: created_user.last_name,
+      email: created_user.email,
+    },
     });
 
   } catch (error) {
