@@ -34,7 +34,7 @@ model Verification {
     id        Int      @id @default(autoincrement())
     code      String   @unique
     user_id   Int      @unique
-    password  String
+    password  String?
 
     user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
 

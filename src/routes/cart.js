@@ -1,23 +1,37 @@
 import { Router } from "express";
 import { prisma } from "../config/db.js";
+import { authMiddleware, generate_jwt } from "../middleware/authMIddleware.js";
 
 export const cartRouter = Router();
 
 
 // to get a cart
-cartRouter.get("/", async (req,res)=>{
-    try {
-        // check if the user exist or has an account
-        const exist_user = await prisma.user.findUnique({
-            where:{
-                id: user.id
-            }
-        });
-        if(!exist_user)return res.json({message: "please log in"});
 
+/**
+ * @swagger
+ * /cart:
+ *   get:
+ *     summary: Get the authenticated user's cart.
+ *     description: This endpoint retrieves the cart belonging to the currently logged-in user.
+ *     tags: [Cart]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Cart retrieved successfully.
+ *       401:
+ *         description: Unauthorized. Authentication token is missing or invalid.
+ *       500:
+ *         description: Internal server error.
+ */
+
+cartRouter.get("/", authMiddleware, async (req,res)=>{
+    try {
+        // checking if the user exist or has an account has been done by authmiddleware
+        
         const cart = await prisma.cart.findUnique({
             where:{
-                userId: user.id
+                userId: req.user.id
             }
         })
         res.status(200).json(cart);
@@ -28,23 +42,51 @@ cartRouter.get("/", async (req,res)=>{
 });
 
 // to add an item to cart
-cartRouter.post("/items", async (req,res)=>{
+
+/**
+ * @swagger
+ * /cart:
+ *   post:
+ *     summary: Add an item to the authenticated user's cart.
+ *     description: This endpoint creates a cart for the user if one does not already exist and adds a product to it.
+ *     tags: [Cart]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               quantity:
+ *                 type: integer
+ *                 example: 2
+ *               productId:
+ *                 type: integer
+ *                 example: 1
+ *     responses:
+ *       200:
+ *         description: Product added successfully.
+ *       401:
+ *         description: Unauthorized. Authentication token is missing or invalid.
+ *       404:
+ *         description: Product is unavailable.
+ *       500:
+ *         description: Internal server error.
+ */
+
+cartRouter.post("/", authMiddleware, async (req,res)=>{
     try {
         const { quantity, productId}= req.body
 
-        // check if the user exist or has an account
-        const exist_user = await prisma.user.findUnique({
-            where:{
-                id: user.id
-            }
-        });
-        if(!exist_user)return res.json({message: "please log in"});
-
+        // checking if the user exist or has an account is for authMiddleware
+        
 
         // to check if this user has a cart already
        const exist_cart = await prisma.cart.findUnique({
             where:{
-                userId: user.id,
+                userId: req.user.id,
             }
         });
 
@@ -70,16 +112,16 @@ cartRouter.post("/items", async (req,res)=>{
             }
         });
         
-        if(!exist_product)return res.json({message: "product is unavailable"});
+        if(!exist_product)return res.status(404).json({message: "product is unavailable"});
 
-        const cartItem = await prisma.cartItem.create({
+        await prisma.cartItem.create({
             data:{
                 quantity, productId, 
                 cartId: cart.id
             } 
             });
              
-        res.status(200).json({message: "product added successfully"});
+        res.status(201).json({message: "product added successfully"});
     } catch (error) {
       console.log("error occured: ", error.message); 
        return res.status(500).json({ message: error.message });  
@@ -88,14 +130,33 @@ cartRouter.post("/items", async (req,res)=>{
 
 
 // to delete a cart
-cartRouter.delete("/cart", async (req,res)=>{
+
+/**
+ * @swagger
+ * /cart:
+ *   delete:
+ *     summary: Delete the authenticated user's cart.
+ *     description: This endpoint deletes the cart belonging to the currently logged-in user.
+ *     tags: [Cart]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Cart deleted successfully.
+ *       401:
+ *         description: Unauthorized. Authentication token is missing or invalid.
+ *       500:
+ *         description: Internal server error.
+ */
+
+cartRouter.delete("/", authMiddleware, async (req,res)=>{
     try {
-        const cart = await prisma.cart.findunique({
-            where:{
-                userId:user,
-                items: cartItems
+        
+        await prisma.cart.delete({
+            where: {
+                userId: req.user.id
             }
-        })
+        });
         res.status(200).json({message:"cart deleted"});
     } catch (error) {
        console.log("error occured: ", error.message); 

@@ -1,12 +1,48 @@
 import { Router } from "express";
 import { prisma } from "../config/db.js";
+import { authMiddleware, generate_jwt } from "../middleware/authMIddleware.js";
+
 
 export const userRouter = Router();
 
 // Admins will be using this routes
 
 // to add a user
-userRouter.post("/users", async (req,res)=>{
+
+/**
+ * @swagger
+ * /users:
+ *   post:
+ *     summary: Create a new user.
+ *     description: Creates and stores a new user in the database.
+ *     tags: [Users]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - first_name
+ *               - email
+ *               - password
+ *             properties:
+ *               first_name:
+ *                 type: string
+ *               last_name:
+ *                 type: string
+ *               email:
+ *                 type: string
+ *               password:
+ *                 type: string
+ *     responses:
+ *       201:
+ *         description: User created successfully.
+ *       500:
+ *         description: Internal server error.
+ */
+
+userRouter.post("/", async (req,res)=>{
     try {
         const {first_name, last_name, email, password} = req.body
 
@@ -24,7 +60,22 @@ userRouter.post("/users", async (req,res)=>{
 });
 
 // to get all users
-userRouter.get("/users", async (req,res)=>{
+
+/**
+ * @swagger
+ * /users:
+ *   get:
+ *     summary: Get all users.
+ *     description: Retrieves all users from the database.
+ *     tags: [Users]
+ *     responses:
+ *       200:
+ *         description: Users retrieved successfully.
+ *       500:
+ *         description: Internal server error.
+ */
+
+userRouter.get("/", async (req,res)=>{
     try {
         const allUsers = await prisma.user.findMany();
         res.status(200).json(allUsers)
@@ -36,20 +87,40 @@ userRouter.get("/users", async (req,res)=>{
 });
 
 // to get one user
-userRouter.get("/users/:id", async (req,res)=>{
+
+/**
+ * @swagger
+ * /users/me:
+ *   get:
+ *     summary: Get the authenticated user's details.
+ *     description: This endpoint retrieves the details of the currently logged-in user.
+ *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: User retrieved successfully.
+ *       401:
+ *         description: Unauthorized. Authentication token is missing or invalid.
+ *       404:
+ *         description: User not found.
+ *       500:
+ *         description: Internal server error.
+ */
+
+userRouter.get("/me", authMiddleware, async (req,res)=>{
     try {
         const user = await prisma.user.findUnique({
             where:{
-                id:Number(req.params.id)
+                id:req.user.id
             }
         });
 
         if(!user) return res.status(404).json({
             message:"user not found",
-            user: user
         });
 
-        res.json(user)
+      res.status(200).json(user);
     } catch (error) {
        console.log("error occured: ", error.message); 
        return res.status(500).json({ message: error.message })  
@@ -57,7 +128,46 @@ userRouter.get("/users/:id", async (req,res)=>{
 });
 
 // to update a user 
-userRouter.put("/user/:id", async (req,res)=>{
+
+/**
+ * @swagger
+ * /users/{id}:
+ *   put:
+ *     summary: Update a user.
+ *     description: Updates a user's information using their ID.
+ *     tags: [Users]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: The ID of the user to update.
+ *         schema:
+ *           type: integer
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               first_name:
+ *                 type: string
+ *               last_name:
+ *                 type: string
+ *               email:
+ *                 type: string
+ *               password:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: User updated successfully.
+ *       404:
+ *         description: User not found.
+ *       500:
+ *         description: Internal server error.
+ */
+
+userRouter.put("/:id", async (req,res)=>{
     try {
         const{first_name, last_name, email, password} = req.body
 
@@ -81,7 +191,31 @@ userRouter.put("/user/:id", async (req,res)=>{
 });
 
 // to delete a user
-userRouter.delete("/user/:id", async (req,res)=>{
+
+/**
+ * @swagger
+ * /users/{id}:
+ *   delete:
+ *     summary: Delete a user.
+ *     description: Deletes a user from the database using their ID.
+ *     tags: [Users]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: The ID of the user to delete.
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: User deleted successfully.
+ *       404:
+ *         description: User not found.
+ *       500:
+ *         description: Internal server error.
+ */
+
+userRouter.delete("/:id", async (req,res)=>{
     try{
         const deletedUser = await prisma.user.delete({
             where:{

@@ -17,13 +17,22 @@ export const verify_jwt = async (token) => {
 };
 
 // auth middleware
+
 export const authMiddleware = async (req, res, next) => {
+  try {
+    
     // check for token
-    const token = req.headers.authorization?.split("")[1];
+    // console.log(req.headers);
+    const token = req.headers.authorization?.split(" ")[1];
+    
+    // console.log("token:", token);
     if (!token) return res.status(401).json({ message: "access denied"});
   
     // verify token
     const verified_user = await verify_jwt(token);
     req.user = verified_user;
     next();
+  } catch (error) {
+    return res.status(401).json({message: "Invalid or expired token."});
+  }
 };

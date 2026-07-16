@@ -12,3 +12,5 @@ export default defineConfig({
     url: process.env["DATABASE_URL"],
   },
 });
+
+// "EMAIL: process.env["EMAIL"]

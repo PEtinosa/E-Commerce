@@ -6,12 +6,42 @@ export const productRouter = Router();
 // product routes
 
 // to add a product
-productRouter.post("/addproduct", async (req,res)=>{
+
+/**
+ * @swagger
+ * /products:
+ *   post:
+ *     summary: Add a new product.
+ *     description: This endpoint creates a new product.
+ *     tags: [Products]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *               image:
+ *                 type: string
+ *               price:
+ *                 type: number
+ *     responses:
+ *       201:
+ *         description: Product added successfully.
+ *       500:
+ *         description: Internal server error.
+ */
+
+productRouter.post("/", async (req,res)=>{
     try {
         const { name, image, price} = req.body
 
         const newProduct = await prisma.product.create({
-            data:{name, image, price}
+            data:{name,
+                 image, 
+                 price:parseFloat(price)}
         });
         res.status(201).json({message: "product added successfully", 
             product: newProduct});
@@ -24,9 +54,31 @@ productRouter.post("/addproduct", async (req,res)=>{
 
 // to get all products
 
-productRouter.get("/products", async (req,res)=>{
+/**
+ * @swagger
+ * /products:
+ *   get:
+ *     summary: Get all products.
+ *     description: This endpoint retrieves all available products together with their sizes.
+ *     tags: [Products]
+ *     responses:
+ *       200:
+ *         description: Products retrieved successfully.
+ *       500:
+ *         description: Internal server error.
+ */
+
+productRouter.get("/", async (req,res)=>{
     try {
-        const allProducts = await prisma.product.findMany();
+        const allProducts = await prisma.product.findMany({
+            include:{
+                sizes: {
+                    include:{
+                        size: true
+                    }
+                }
+            }
+        });
 
         // res.status(404).json({message:"proudct is unavailable"});
         /*
@@ -43,12 +95,44 @@ productRouter.get("/products", async (req,res)=>{
 });
 
 // to get one product
-productRouter.get("/products/:id", async (req,res)=>{
+
+/**
+ * @swagger
+ * /products/{id}:
+ *   get:
+ *     summary: Get a single product.
+ *     description: This endpoint retrieves a product using its ID.
+ *     tags: [Products]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: The product ID.
+ *     responses:
+ *       200:
+ *         description: Product retrieved successfully.
+ *       404:
+ *         description: Product is unavailable.
+ *       500:
+ *         description: Internal server error.
+ */
+
+productRouter.get("/:id", async (req,res)=>{
     try {
         const product = await prisma.product.findUnique({
             where:{
                 // id:Number(id)
                 id:Number(req.params.id)
+            },
+
+             include:{
+                sizes: {
+                    include:{
+                        size: true
+                    }
+                }
             }
         });
 
@@ -57,7 +141,7 @@ productRouter.get("/products/:id", async (req,res)=>{
             product: product
         });
 
-        res.json(product)
+        return res.status(200).json(product)
 
     } catch (error) {
        console.log("error occured: ", error.message); 
@@ -66,9 +150,57 @@ productRouter.get("/products/:id", async (req,res)=>{
 });
 
 // to update a product example changing the price
-productRouter.put("/products/:id", async (req,res)=>{
+
+/**
+ * @swagger
+ * /products/{id}:
+ *   put:
+ *     summary: Update a product.
+ *     description: This endpoint updates a product's price and image using its ID.
+ *     tags: [Products]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: The product ID.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               price:
+ *                 type: number
+ *               image:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Product updated successfully.
+ *       404:
+ *         description: Product not found.
+ *       500:
+ *         description: Internal server error.
+ */
+
+productRouter.put("/:id", async (req,res)=>{
     try {
         const {price,image}= req.body
+
+        // Check whether the product exists.
+        const existingProduct = await prisma.product.findUnique({
+            where: {
+                id: Number(req.params.id)
+            }
+        });
+
+        if (!existingProduct) {
+            return res.status(404).json({
+                message: "Product not found."
+            });
+        }
 
         const updatedProduct = await prisma.product.update({
             where:{
@@ -76,10 +208,11 @@ productRouter.put("/products/:id", async (req,res)=>{
             },
 
             data:{
-                price, image
+                price:parseFloat(price),
+                image
             }
         });
-        res.status(200).json({message:"product updated",
+       return res.status(200).json({message:"product updated",
             product: updatedProduct
         });
        
@@ -90,8 +223,48 @@ productRouter.put("/products/:id", async (req,res)=>{
 });
 
 // to delete a product
-productRouter.delete("/products/:id", async (req,res)=>{
+
+/**
+ * @swagger
+ * /products/{id}:
+ *   delete:
+ *     summary: Delete a product.
+ *     description: This endpoint deletes a product using its ID.
+ *     tags: [Products]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: The product ID.
+ *     responses:
+ *       200:
+ *         description: Product deleted successfully.
+ *       404:
+ *         description: Product not found.
+ *       500:
+ *         description: Internal server error.
+ */
+
+productRouter.delete("/:id", async (req,res)=>{
     try {
+
+
+        // Check whether the product exists.
+        const existingProduct = await prisma.product.findUnique({
+            where: {
+                id: Number(req.params.id)
+            }
+        });
+
+        if (!existingProduct) {
+            return res.status(404).json({
+                message: "Product not found."
+            });
+        }
+
+        // then delete it when you find it
         const deletedProduct = await prisma.product.delete({
             where:{
                 id: Number(req.params.id)

@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 import { logger } from "./middleware/logger.js";
 import { errorHandler } from "./middleware/errorhandler.js";
 
+import {swaggerSetup} from "./config/swagger.js"
 dotenv.config();
 
 // Import Routes
@@ -17,6 +18,7 @@ const app = express();
 app.use (cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended:true}));
+swaggerSetup(app);
 
 // API ROUTES
 app.use("/auth", authRouter)
