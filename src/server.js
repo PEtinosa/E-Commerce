@@ -6,6 +6,7 @@ import { errorHandler } from "./middleware/errorhandler.js";
 
 import {swaggerSetup} from "./config/swagger.js"
 dotenv.config();
+// console.log(process.env);
 
 // Import Routes
 import { authRouter } from "./routes/authRoute.js";
