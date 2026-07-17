@@ -386,3 +386,23 @@ export const swaggerSetup = (app) => {
         swaggerUi.setup(swaggerSpecs)
     );
 };
+
+
+/*
+{ id: 1, name: "ARIANA IN BLUE ADIRE", price: 85000, image: img1 },
+  { id: 2, name: "EDEN IN ADIRE", price: 90000, image: img2 },
+  { id: 3, name: "ARIANA DRESS IN BROCADE", price: 85000, image: img3 },
+  { id: 4, name: "TARE SET", price: 110000, image: img4 },
+  { id: 5, name: "NAOOMI", price: 70000, image: img5 },
+  { id: 6, name: "HARA", price: 60000, image: img6 },
+  { id: 7, name: "ASAKE SHORT SET", price: 100000, image: img7 },
+  { id: 8, name: "ARIYIKE", price: 250000, image: img8 },
+  { id: 9, name: "ARIANA IN BLUE ADIRE", price: 85000, image: img1 },
+  { id: 10, name: "EDEN IN ADIRE", price: 90000, image: img2 },
+  { id: 11, name: "ARIANA DRESS IN BROCADE", price: 85000, image: img3 },
+  { id: 12, name: "TARE SET", price: 110000, image: img4 },
+  { id: 13, name: "NAOOMI", price: 70000, image: img5 },
+  { id: 14, name: "HARA", price: 60000, image: img6 },
+  { id: 15, name: "ASAKE SHORT SET", price: 100000, image: img7 },
+  { id: 16, name: "ARIYIKE", price: 250000, image: img8 },
+*/ 

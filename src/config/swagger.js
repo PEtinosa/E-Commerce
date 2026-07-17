@@ -4,27 +4,29 @@ import swaggerUi from "swagger-ui-express";
 // options > swaggerjsdoc > swagger-ui-express
 
 const options = {
-  definition: {
-    openapi: "3.0.0",
-    info: {
-      title: "tutorial api documentation",
-      version: "1.0.0",
-      description: "this shows a simple tutorial api documentaion",
-    },
-    servers: [
-      {
-        url: "http://localhost:5001",
-      },
-      // production server
-    ],
-    components: {
-      securitySchemes: {
-        bearerAuth: {
-          type: "http",
-          scheme: "bearer",
-          bearerFormat: "JWT",
+    definition: {
+        openapi: '3.0.0',
+        info: {
+            title: 'api documentation',
+            version:'1.0.0',
+            description: 'api documentaion',
+        
         },
-      },
+        servers: [
+            {
+                url: 'http://localhost:5001',
+            }
+            // production server
+        ],
+       components:{
+        securitySchemes: {
+            bearerAuth:{
+                type: "http",
+                scheme: "bearer",
+                bearerFormat: "JWT",
+            }
+        }
+       }
     },
   },
   apis: ["./src/routes/*.js"],
