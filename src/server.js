@@ -16,7 +16,11 @@ import { userRouter } from "./routes/users.js";
 
 const app = express();
 
-app.use (cors());
+app.use (cors({
+    origin: "htttp://localhost:5173",
+    credentials: true
+}));
+
 app.use(express.json());
 app.use(express.urlencoded({ extended:true}));
 swaggerSetup(app);
