@@ -38,7 +38,7 @@ export default function Navbar() {
           <div className="flex items-center space-x-10">
             <Link to="/" className="text-sm font-medium text-gray-800 hover:text-primary transition-colors">Home</Link>
             <Link to="/shop" className="text-sm font-bold text-primary transition-colors">Shop</Link>
-            <Link to="#" className="text-sm font-medium text-gray-800 hover:text-primary transition-colors">Feed</Link>
+            {/* <Link to="#" className="text-sm font-medium text-gray-800 hover:text-primary transition-colors">Feed</Link> */}
           </div>
 
           {/* Icons (Search, Cart) */}
