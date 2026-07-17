@@ -23,7 +23,7 @@ export default function Cart() {
       <div className="space-y-6 mb-16">
         {cartItems.map((item) => (
           <div key={item.id} className="border border-gray-200 p-4 md:p-6 flex flex-col sm:flex-row gap-6 bg-white relative">
-            <div className="w-full sm:w-32 h-64 sm:h-40 flex-shrink-0 bg-gray-50">
+            <div className="w-full sm:w-32 h-64 sm:h-40 shrink-0 bg-gray-50">
               <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
             </div>
             

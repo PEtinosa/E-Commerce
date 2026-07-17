@@ -63,7 +63,7 @@ export default function Home() {
             <h3 className="text-lg font-bold text-gray-900 tracking-wider uppercase">
               The Signature Collection
             </h3>
-            <p className="text-gray-500 mt-2 text-sm">Explore now</p>
+            <p className="text-purple-500 mt-2 text-sm">Explore now</p>
           </Link>
 
           {/* Item 2 */}
@@ -82,7 +82,7 @@ export default function Home() {
             <h3 className="text-lg font-bold text-gray-900 tracking-wider uppercase">
               Vibrant Adire
             </h3>
-            <p className="text-gray-500 mt-2 text-sm">Explore now</p>
+            <p className="text-purple-500 mt-2 text-sm">Explore now</p>
           </Link>
 
           {/* Item 3 */}
@@ -101,7 +101,7 @@ export default function Home() {
             <h3 className="text-lg font-bold text-gray-900 tracking-wider uppercase">
               Modern Classics
             </h3>
-            <p className="text-gray-500 mt-2 text-sm">Explore now</p>
+            <p className="text-purple-500 mt-2 text-sm">Explore now</p>
           </Link>
         </div>
       </div>
