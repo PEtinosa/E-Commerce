@@ -7,9 +7,9 @@ const options = {
     definition: {
         openapi: '3.0.0',
         info: {
-            title: 'tutorial api documentation',
+            title: 'api documentation',
             version:'1.0.0',
-            description: 'this shows a simple tutorial api documentaion',
+            description: 'api documentaion',
         
         },
         servers: [
